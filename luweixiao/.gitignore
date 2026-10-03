@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+luweixiao_state/
+config*.json
+*.log
+*.dta
+reply.md
+conversation.json
+last_result.json
+*.key
+*-key.txt

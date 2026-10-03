@@ -1,0 +1,9 @@
+v 3
+d luweixiao 4.0.0 - Stata code review and result interpretation
+d Requires Stata 18 and configured 64-bit Python
+f luweixiao.ado
+f luweixiao.sthlp
+f luweixiao_bridge.py
+f luweixiao_api.py
+f luweixiao_settings.py
+f luweixiao_evidence.py
