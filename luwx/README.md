@@ -1,10 +1,12 @@
 # luwx 5.0：在 Stata 中直接提问和分析
 
-需要 Stata 18 和 Stata 内可用的64位Python。下载 `luwx-stata-v5.zip`，解压后运行 `do install.do`；仓库文件发布后也可用下方在线命令。配置按 [INSTALL.md](INSTALL.md) 操作；每位学生使用自己的API密钥。
+需要 Stata 18 和 Stata 内可用的64位Python。下载 `luwx-stata-v5.zip`，解压后运行 `do install.do`；也可用下方在线命令。配置按 [INSTALL.md](INSTALL.md) 操作；每位学生使用自己的API密钥。
 
 ```stata
 net install luwx, from(https://raw.githubusercontent.com/yuanwenhua1994/AI-/main/luwx) replace
 ```
+
+若Stata直接联网返回r(603)，INSTALL.md提供在Stata内用Python下载并安装的备用命令；也可解压ZIP后运行install.do。
 
 ```stata
 * 将“自己的密钥”换成你申请的API密钥，只需配置一次。

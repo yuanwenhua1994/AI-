@@ -65,14 +65,22 @@ luwx find songbl 面板
 
 ## 在线安装和更新
 
-仓库文件发布后，首次安装且PLUS可写的学生可使用：
+首次安装且PLUS可写的学生可使用：
 
 ```stata
 net install luwx, from(https://raw.githubusercontent.com/yuanwenhua1994/AI-/main/luwx) replace
 which luwx
 ```
 
-源码与完整 `luwx-stata-v5.zip` 的发布目标是 [GitHub目录](https://github.com/yuanwenhua1994/AI-/tree/main/luwx)。以成功推送后的文件为准。
+如果上述命令返回r(603)且GitHub网页可打开，先确认Stata内Python已配置，再在Stata执行这个备用在线安装命令：
+
+```stata
+python: exec(__import__("urllib.request", fromlist=["urlopen"]).urlopen("https://raw.githubusercontent.com/yuanwenhua1994/AI-/main/luwx/install_online.py", timeout=30).read().decode("utf-8"))
+```
+
+它用Python下载本仓库文件、核对清单哈希，再交给本机Stata安装；不改网络设置，不包含API密钥。安装后重启Stata；以后更新可重新执行相同安装命令。若PLUS不可写，可先建自己的目录并设置`sysdir set PLUS "C:/Users/你的用户名/Documents/stata-plus"`；PERSONAL也需可写，见本地安装部分。目录设置仅影响当前会话，后续需保留自己的路径设置。
+
+源码与完整 `luwx-stata-v5.zip` 位于 [GitHub目录](https://github.com/yuanwenhua1994/AI-/tree/main/luwx)。
 
 旧命令`luweixiao`作为转发别名继续可用，推荐以后写`luwx`。若luwx尚无API设置，会迁移本机已有luweixiao配置；旧对话和分析记录不迁移。学生仍须使用自己的密钥，不复制教师状态目录。
 

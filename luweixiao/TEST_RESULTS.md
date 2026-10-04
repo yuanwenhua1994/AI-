@@ -6,6 +6,7 @@
 - 新功能4组通过：用户完整stset、生存统计与模型；7种IV/FE命令和9种规格；12项后估计含margins/nlcom,post；44项文件/修改/重放等范围拦截。已安装的ivreg2/reghdfe/ivreghdfe均用真实Stata核对。
 - 原功能5组兼容检查、6条实际ado生存/后估计调用通过；原生截尾反例证实有效进入者在行政截止右删失，延迟进入不因晚于origin自动排除。依据[Stata stset手册](https://www.stata.com/manuals/ststset.pdf)。
 - 本地net install和install.do通过，8个运行文件可独立安装，不含个人设置；离线examples.do通过。另保留luweixiao兼容安装入口。
+- 本机Stata原生GitHub HTTPS安装返回r(603)；备用Python安装入口已实际通过HTTPS下载公开文件、核对SHA256清单并交给真实Stata安装。独立PLUS中8个运行文件与源文本一致（允许Windows换行转换），未复制配置，summarize真实结果保留。安装入口另有13项边界检查通过。
 
 ## 真实服务
 
@@ -19,4 +20,4 @@ API适配器保留OpenAI兼容、Anthropic Messages、Gemini generateContent处�
 
 ## 边界
 
-check为静态审查；run由Stata计算，不证明研究设计成立。explain读取保存的真实输出或当前r/e，不恢复全部旧屏幕。超过120000字符或大矩阵明确裁剪。后估计依赖适用模型，错误不会混入旧估计。学生无需PyStata或额外API SDK；测试宿主关闭异步输出。发布后在线安装另按INSTALL.md核验。接口依据：[SFI](https://www.stata.com/python/api18/SFIToolkit.html)、[net安装](https://www.stata.com/manuals/rnet.pdf)。
+check为静态审查；run由Stata计算，不证明研究设计成立。explain读取保存的真实输出或当前r/e，不恢复全部旧屏幕。超过120000字符或大矩阵明确裁剪。后估计依赖适用模型，错误不会混入旧估计。学生无需PyStata或额外API SDK；测试宿主关闭异步输出。在线安装方法见INSTALL.md。接口依据：[SFI](https://www.stata.com/python/api18/SFIToolkit.html)、[net安装](https://www.stata.com/manuals/rnet.pdf)。
