@@ -1,6 +1,6 @@
 v 3
-d luweixiao compatibility package for luwx 5.0.0
-d Main command is luwx; old luweixiao calls are forwarded
+d luwx 5.0.0 - Stata code review and result interpretation
+d Requires Stata 18 and configured 64-bit Python
 f luwx.ado
 f luwx.sthlp
 f luwx_bridge.py

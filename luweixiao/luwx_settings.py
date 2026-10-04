@@ -1,4 +1,4 @@
-"""One current API configuration for luweixiao 4; no Stata or network calls.
+"""One current API configuration for luwx 5; no Stata or network calls.
 
 configure(state, options) accepts the ado option names key, baseurl, model,
 protocol, auth, allowhttp and timeout. keyfile/keyenv/effort remain backend
@@ -14,7 +14,7 @@ from pathlib import Path
 import re
 import tempfile
 
-import luweixiao_api as api
+import luwx_api as api
 
 
 DEFAULTS = {
@@ -41,9 +41,9 @@ def _stored(state):
     try:
         value = json.loads(path.read_text(encoding='utf-8-sig'))
     except (OSError, UnicodeError, ValueError):
-        raise ValueError('无法读取当前 API 配置；请重新运行 luweixiao config。') from None
+        raise ValueError('无法读取当前 API 配置；请重新运行 luwx config。') from None
     if not isinstance(value, dict):
-        raise ValueError('当前 API 配置不是有效对象；请重新运行 luweixiao config。')
+        raise ValueError('当前 API 配置不是有效对象；请重新运行 luwx config。')
     # Legacy aliases are read only; the new file always uses canonical names.
     for alias, canonical in (('key', 'api_key'), ('baseurl', 'base_url'), ('keyenv', 'key_env')):
         if canonical not in value and alias in value:
@@ -64,7 +64,7 @@ def _runtime(stored):
     except (ValueError, TypeError) as error:
         message = api.redact(str(error), config)
         if str(error).startswith('尚未配置密钥'):
-            message = '尚未设置可用密钥。运行 luweixiao config, key(你的密钥)；免密钥服务用 auth(none)。'
+            message = '尚未设置可用密钥。运行 luwx config, key(你的密钥)；免密钥服务用 auth(none)。'
         raise ValueError(message) from None
     return valid
 
@@ -73,6 +73,69 @@ def load(state):
     """Load config.json first, otherwise legacy config_default.json; no writes."""
     config = _stored(state)
     return _runtime(config) if config else {}
+
+
+def migrate(state, legacy_path):
+    """Copy valid legacy settings once; return True only when a file was created.
+
+    legacy_path is the old PERSONAL/luweixiao_state directory. Existing current
+    config.json/config_default.json are never replaced, even if malformed.
+    Only settings migrate: no history, results, replies or old provenance. A
+    key_env reference stays a reference, even if its variable is currently
+    unset. Validation here is local only; it neither checks accounts nor calls
+    an API. Malformed/inaccessible legacy data are skipped without printing.
+    """
+    temporary = None
+    try:
+        state = Path(state)
+        current_names = ('config.json', 'config_default.json')
+        if any((state / name).exists() for name in current_names):
+            return False
+        stored = _stored(legacy_path)
+        if not stored:
+            return False
+        candidate = dict(stored)
+        env_name = candidate.get('key_env')
+        if env_name:
+            if not isinstance(env_name, str) or not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', env_name):
+                return False
+            # A missing environment variable is a runtime issue, not a reason
+            # to discard a valid reference. This placeholder is never saved.
+            candidate['api_key'] = os.environ.get(env_name) or 'migration-validation-only'
+        timeout = candidate.get('timeout', 180)
+        if isinstance(timeout, bool) or (isinstance(timeout, float) and not timeout.is_integer()):
+            return False
+        runtime = api.validate_config(candidate)
+        api.endpoint(runtime)
+        saved = {key: runtime[key] for key in _FIELDS if key in runtime}
+        if runtime['auth'] == 'none':
+            saved.pop('api_key', None)
+            saved.pop('key_env', None)
+        elif env_name:
+            saved['key_env'] = env_name
+            saved.pop('api_key', None)
+        state.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', newline='\n',
+                                         prefix='.migration-', suffix='.tmp', dir=state,
+                                         delete=False) as handle:
+            temporary = Path(handle.name)
+            json.dump(saved, handle, ensure_ascii=False, indent=2)
+            handle.write('\n')
+        if any((state / name).exists() for name in current_names):
+            return False
+        # A hard link publishes a complete file without ever overwriting an
+        # already-created current config, including a simultaneous config save.
+        # Filesystems without hard-link support simply skip automatic migration.
+        os.link(temporary, state / 'config.json')
+        return True
+    except (OSError, UnicodeError, ValueError, TypeError):
+        return False
+    finally:
+        if temporary is not None:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError:
+                pass
 
 
 def _flag(value):

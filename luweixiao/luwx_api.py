@@ -1,4 +1,4 @@
-"""Small standard-library adapters for luweixiao. No Stata dependency.
+"""Small standard-library adapters for luwx. No Stata dependency.
 
 chat() accepts OpenAI-style text messages and function tools. Native response
 metadata in ``_provider`` must be retained in history for subsequent tool turns.
@@ -256,7 +256,7 @@ def build_request(config, messages, tools=None):
     if not isinstance(messages, list) or not messages:
         raise ValueError("至少需要一条消息。")
     protocol = cfg["protocol"]
-    headers = {"Content-Type": "application/json", "Accept": "application/json", "User-Agent": "luweixiao/3.0"}
+    headers = {"Content-Type": "application/json", "Accept": "application/json", "User-Agent": "luwx/3.0"}
     functions = _function_tools(tools)
     if protocol == "openai":
         clean = []
